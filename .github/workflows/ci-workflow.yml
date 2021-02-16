@@ -6,7 +6,7 @@ jobs:
   s390x-build:
 
     timeout-minutes: 90
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
     
     strategy:
@@ -17,10 +17,14 @@ jobs:
 
     steps:
       - name: Set up JDK 11
-        shell: bash
-        run: |
-          sudo apt-get -q -y update
-          sudo apt-get install -y git wget tar curl openjdk-11-jdk patch libatomic1
+      - uses: uraimo/run-on-arch-action@v1.0.9
+        with:
+          architecture: s390x
+          distribution: ubuntu18.04
+          run: |
+            set -euo pipefail
+            sudo apt-get -q -y update
+            sudo apt-get install -y git wget tar curl openjdk-11-jdk patch libatomic1
       - name: Disk After Cache
         run: |
           df -h
