@@ -4,29 +4,37 @@ on: [push, pull_request]
 
 jobs:
   s390x-build:
-    runs-on: ubuntu-20.04
-    name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
-    strategy:
-      matrix:
-        include:
-          - arch: s390x
-            distro: ubuntu20.04
+    runs-on: ubuntu-18.04
+    name: Build on s390x
     steps:
-    - uses: actions/checkout@v2
-    - uses: uraimo/run-on-arch-action@v2.0.8
-      name: Configure and Build
-      with:
-        arch: ${{ matrix.arch }}
-        distro: ${{ matrix.distro }}
-        shell: /bin/bash
-        install: |
-          apt-get -q -y update
-          apt-get install -q -y wget tar curl openjdk-11-jdk patch libatomic1
-        env: |
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          path: /home/runner/work/nifi/nifi
+      - name: Enable running multiple architectures
+        run: |
+          sudo docker run --rm --privileged linuxkit/binfmt:4ea3b9b0938cbd19834c096aa31ff475cc75d281
+      - uses: uraimo/run-on-arch-action@v1.0.9
+        with:
+          architecture: s390x
+          distribution: ubuntu18.04
+          env: |
           MAVEN_OPTS: -Xmx2g -XX:ReservedCodeCacheSize=1g -XX:+UseG1GC -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN -Dmaven.surefire.arguments="-Duser.language=en -Duser.region=AU -Duser.timezone=Australia/Melbourne"
           JAVA_HOME: /usr/lib/jvm/java-11-openjdk-s390x/
-        run: |
-          cd /home/runner/work/nifi/nifi
-          wget https://raw.githubusercontent.com/vibhutisawant/crate/master/patch.diff
-          git apply patch.diff
-          mvn -V -T 0.7C package verify -B -Pcontrib-check,include-grpc -Ddir-only -ntp -ff -pl -nifi-assembly,-nifi-toolkit/nifi-toolkit-assembly,-nifi-system-tests -nsu
+          run: |
+            set -euo pipefail
+            apt-get update
+            apt-get install -y --no-install-recommends \
+            wget \
+            tar \
+            curl \
+            openjdk-11-jdk \
+            patch \
+            libatomic1 
+            git \
+            sudo
+            wget https://raw.githubusercontent.com/vibhutisawant/crate/master/patch.diff
+            git apply patch.diff
+            mvn -V -T 0.7C package verify -B -Pcontrib-check,include-grpc -Ddir-only -ntp -ff -pl -nifi-assembly,-nifi-toolkit/nifi-toolkit-assembly,-nifi-system-tests -nsu
+          
