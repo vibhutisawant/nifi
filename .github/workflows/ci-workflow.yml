@@ -18,7 +18,6 @@ jobs:
       with:
         arch: ${{ matrix.arch }}
         distro: ${{ matrix.distro }}
-        githubToken: ${{ github.token }}
         shell: /bin/bash
         install: |
           apt-get -q -y update
