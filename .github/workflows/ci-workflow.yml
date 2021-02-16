@@ -7,13 +7,13 @@ jobs:
 
     timeout-minutes: 90
     runs-on: ubuntu-latest
-    name: Ubuntu - JDK 1.8
+    name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
     
     strategy:
       matrix:
         include:
           - arch: s390x
-            distro: ubuntu20.04
+            distro: ubuntu18.04
 
     steps:
       - name: Set up JDK 11
@@ -30,7 +30,10 @@ jobs:
           MAVEN_OPTS: -Xmx2g -XX:ReservedCodeCacheSize=1g -XX:+UseG1GC -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN -Dmaven.surefire.arguments="-Duser.language=en -Duser.region=AU -Duser.timezone=Australia/Melbourne"
           JAVA_HOME: /usr/lib/jvm/java-11-openjdk-s390x/
         run: |
-          echo `pwd`
+          cd /home/runner/work/nifi/nifi
+          wget https://raw.githubusercontent.com/vibhutisawant/test/master/nifi/s390x/patch.diff?token=AJZEOKUEKLNQ33Q4GDBCHF3AFNZOO
+          mv 'patch.diff?token=AJZEOKUEKLNQ33Q4GDBCHF3AFNZOO' patch.diff
+          git apply patch.diff
           mvn -V -T 0.7C package verify -B -Pcontrib-check,include-grpc -Ddir-only -ntp -ff -pl -nifi-assembly,-nifi-toolkit/nifi-toolkit-assembly,-nifi-system-tests -nsu
       - name: Disk After Build
         run: |
