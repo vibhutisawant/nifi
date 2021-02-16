@@ -24,8 +24,8 @@ jobs:
           JAVA_HOME: /usr/lib/jvm/java-11-openjdk-s390x/
           run: |
             set -euo pipefail
-            apt-get update
-            apt-get install -y --no-install-recommends \
+            apt-get -q -y update
+            apt-get install -q -y --no-install-recommends \
             wget \
             tar \
             curl \
