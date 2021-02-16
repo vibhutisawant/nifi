@@ -16,68 +16,11 @@ jobs:
             distro: ubuntu20.04
 
     steps:
-      - name: Disk Before Code and Cache
+      - name: Set up JDK 11
+        shell: bash
         run: |
-          sudo swapoff -a
-          sudo rm -f /swapfile
-          sudo apt clean
-          docker rmi $(docker image ls -aq)
-          df -h
-      - name: Checkout Code
-        uses: actions/checkout@v2
-      - name: Check NPM Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('**/package-lock.json') }} 
-          restore-keys: |
-            npm-
-      - name: Check Maven Com Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository/com
-          key: mvn-com-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            mvn-com-
-      - name: Check Maven Org Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository/org
-          key: mvn-org-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            mvn-org-
-      - name: Check Maven Net Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository/net
-          key: mvn-net-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            mvn-net-
-      - name: Check Maven IO Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository/io
-          key: mvn-io-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            mvn-io-
-      - name: Check Maven BIZ Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository/biz
-          key: mvn-biz-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            mvn-biz-
-      - name: Check Maven IT Cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository/it
-          key: mvn-it-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            mvn-it-
-      - name: Set up JDK 1.8 FR
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
+          apt-get -q -y update
+          apt-get install -y git wget tar curl openjdk-11-jdk patch libatomic1
       - name: Disk After Cache
         run: |
           df -h
@@ -85,7 +28,9 @@ jobs:
         shell: bash
         env:
           MAVEN_OPTS: -Xmx2g -XX:ReservedCodeCacheSize=1g -XX:+UseG1GC -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN -Dmaven.surefire.arguments="-Duser.language=en -Duser.region=AU -Duser.timezone=Australia/Melbourne"
+          JAVA_HOME: /usr/lib/jvm/java-11-openjdk-s390x/
         run: |
+          echo `pwd`
           mvn -V -T 0.7C package verify -B -Pcontrib-check,include-grpc -Ddir-only -ntp -ff -pl -nifi-assembly,-nifi-toolkit/nifi-toolkit-assembly,-nifi-system-tests -nsu
       - name: Disk After Build
         run: |
