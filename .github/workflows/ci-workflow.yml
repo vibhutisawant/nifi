@@ -31,8 +31,7 @@ jobs:
           JAVA_HOME: /usr/lib/jvm/java-11-openjdk-s390x/
         run: |
           cd /home/runner/work/nifi/nifi
-          wget https://raw.githubusercontent.com/vibhutisawant/test/master/nifi/s390x/patch.diff?token=AJZEOKUEKLNQ33Q4GDBCHF3AFNZOO
-          mv 'patch.diff?token=AJZEOKUEKLNQ33Q4GDBCHF3AFNZOO' patch.diff
+          wget https://raw.githubusercontent.com/vibhutisawant/crate/master/patch.diff
           git apply patch.diff
           mvn -V -T 0.7C package verify -B -Pcontrib-check,include-grpc -Ddir-only -ntp -ff -pl -nifi-assembly,-nifi-toolkit/nifi-toolkit-assembly,-nifi-system-tests -nsu
       - name: Disk After Build
