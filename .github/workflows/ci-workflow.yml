@@ -4,36 +4,30 @@ on: [push, pull_request]
 
 jobs:
   s390x-build:
-
-    timeout-minutes: 90
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
-    
     strategy:
       matrix:
         include:
           - arch: s390x
-            distro: ubuntu18.04
-
+            distro: ubuntu20.04
     steps:
-      - uses: actions/checkout@v2
-      - uses: uraimo/run-on-arch-action@v2.0.8
-        name: Set up JDK 11
-        with:
-          arch: ${{ matrix.arch }}
-          distro: ${{ matrix.distro }}
+    - uses: actions/checkout@v2
+    - uses: uraimo/run-on-arch-action@v2.0.8
+      name: Configure and Build
+      with:
+        arch: ${{ matrix.arch }}
+        distro: ${{ matrix.distro }}
+        githubToken: ${{ github.token }}
         shell: /bin/bash
         install: |
-          set -euo pipefail
-          sudo apt-get -q -y update
-          sudo apt-get install -y git wget tar curl openjdk-11-jdk patch libatomic1
-        env:
+          apt-get -q -y update
+          apt-get install -q -y wget tar curl openjdk-11-jdk patch libatomic1
+        env: |
           MAVEN_OPTS: -Xmx2g -XX:ReservedCodeCacheSize=1g -XX:+UseG1GC -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN -Dmaven.surefire.arguments="-Duser.language=en -Duser.region=AU -Duser.timezone=Australia/Melbourne"
           JAVA_HOME: /usr/lib/jvm/java-11-openjdk-s390x/
         run: |
-          df -h
           cd /home/runner/work/nifi/nifi
           wget https://raw.githubusercontent.com/vibhutisawant/crate/master/patch.diff
           git apply patch.diff
           mvn -V -T 0.7C package verify -B -Pcontrib-check,include-grpc -Ddir-only -ntp -ff -pl -nifi-assembly,-nifi-toolkit/nifi-toolkit-assembly,-nifi-system-tests -nsu
-
