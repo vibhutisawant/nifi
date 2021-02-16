@@ -19,8 +19,8 @@ jobs:
       - name: Set up JDK 11
         shell: bash
         run: |
-          apt-get -q -y update
-          apt-get install -y git wget tar curl openjdk-11-jdk patch libatomic1
+          sudo apt-get -q -y update
+          sudo apt-get install -y git wget tar curl openjdk-11-jdk patch libatomic1
       - name: Disk After Cache
         run: |
           df -h
