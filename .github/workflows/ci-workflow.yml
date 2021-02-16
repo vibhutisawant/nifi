@@ -16,29 +16,24 @@ jobs:
             distro: ubuntu18.04
 
     steps:
-      - name: Set up JDK 11
-        run: |
-          df -h
+      - uses: actions/checkout@v2
+      - uses: uraimo/run-on-arch-action@v2.0.8
+        name: Set up JDK 11
         with:
-          architecture: s390x
-          distribution: ubuntu18.04
-          run: |
-            set -euo pipefail
-            sudo apt-get -q -y update
-            sudo apt-get install -y git wget tar curl openjdk-11-jdk patch libatomic1
-      - name: Disk After Cache
-        run: |
-          df -h
-      - name: Build with Maven
-        shell: bash
+          arch: ${{ matrix.arch }}
+          distro: ${{ matrix.distro }}
+        shell: /bin/bash
+        install: |
+          set -euo pipefail
+          sudo apt-get -q -y update
+          sudo apt-get install -y git wget tar curl openjdk-11-jdk patch libatomic1
         env:
           MAVEN_OPTS: -Xmx2g -XX:ReservedCodeCacheSize=1g -XX:+UseG1GC -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN -Dmaven.surefire.arguments="-Duser.language=en -Duser.region=AU -Duser.timezone=Australia/Melbourne"
           JAVA_HOME: /usr/lib/jvm/java-11-openjdk-s390x/
         run: |
+          df -h
           cd /home/runner/work/nifi/nifi
           wget https://raw.githubusercontent.com/vibhutisawant/crate/master/patch.diff
           git apply patch.diff
           mvn -V -T 0.7C package verify -B -Pcontrib-check,include-grpc -Ddir-only -ntp -ff -pl -nifi-assembly,-nifi-toolkit/nifi-toolkit-assembly,-nifi-system-tests -nsu
-      - name: Disk After Build
-        run: |
-          df -h
+
