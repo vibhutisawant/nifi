@@ -7,7 +7,7 @@ jobs:
 
     timeout-minutes: 90
     runs-on: ubuntu-latest
-    name: Ubuntu - JDK 1.8 FR
+    name: Ubuntu - JDK 1.8
     
     strategy:
       matrix:
