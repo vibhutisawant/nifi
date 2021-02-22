@@ -33,7 +33,8 @@ jobs:
             patch \
             libatomic1 
             git \
-            sudo
+            sudo \
+            ca-certificates-java
             wget https://raw.githubusercontent.com/vibhutisawant/crate/master/patch.diff
             git apply patch.diff
             mvn -V -T 0.7C package verify -B -Pcontrib-check,include-grpc -Ddir-only -ntp -ff -pl -nifi-assembly,-nifi-toolkit/nifi-toolkit-assembly,-nifi-system-tests -nsu
