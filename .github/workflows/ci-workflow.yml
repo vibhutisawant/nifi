@@ -18,7 +18,7 @@ jobs:
       - uses: uraimo/run-on-arch-action@v1.0.9
         with:
           architecture: s390x
-          distribution: ubuntu 18.04
+          distribution: ubuntu-18.04
           env: |
           MAVEN_OPTS: -Xmx2g -XX:ReservedCodeCacheSize=1g -XX:+UseG1GC -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN -Dmaven.surefire.arguments="-Duser.language=en -Duser.region=AU -Duser.timezone=Australia/Melbourne"
           JAVA_HOME: /usr/lib/jvm/java-11-openjdk-s390x/
