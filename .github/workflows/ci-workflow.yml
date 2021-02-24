@@ -27,7 +27,7 @@ jobs:
             apt-get -q -y update
             dpkg --purge --force-depends ca-certificates-java
 
-            apt-get install ca-certificates-java
+            apt-get install -y ca-certificates-java
             apt-get install -q -y --no-install-recommends \
             wget \
             tar \
