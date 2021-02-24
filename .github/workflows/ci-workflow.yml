@@ -12,7 +12,7 @@ jobs:
         with:
           fetch-depth: 1
           path: /home/runner/work/nifi/nifi
-      - uses: uraimo/run-on-arch-action@v1.0.9
+      - uses: uraimo/run-on-arch-action@v2.0.8
         with:
           architecture: s390x
           distribution: ubuntu18.04
