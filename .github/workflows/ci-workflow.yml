@@ -30,7 +30,7 @@ jobs:
             tar \
             curl \
             patch \
-            libatomic1 
+            libatomic1 \
             git \
             sudo \
             ca-certificates-java
