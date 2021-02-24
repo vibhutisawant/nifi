@@ -25,14 +25,10 @@ jobs:
           run: |
             set -euo pipefail
             apt-get -q -y update
-            dpkg --purge --force-depends ca-certificates-java
-
-            apt-get install -y ca-certificates-java
             apt-get install -q -y --no-install-recommends \
             wget \
             tar \
             curl \
-            openjdk-11-jdk \
             patch \
             libatomic1 
             git \
